@@ -17,8 +17,7 @@
    ================================================================================================================
 */
 
-#ifndef _SCREEN_H
-#define _SCREEN_H
+#pragma once 
 
 #ifdef __cplusplus
 extern "C"
@@ -59,4 +58,3 @@ void SignalHandler(int);
 }
 #endif
 
-#endif /* _SCREEN_H */

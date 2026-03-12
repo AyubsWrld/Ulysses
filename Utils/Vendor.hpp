@@ -17,8 +17,7 @@
    ================================================================================================================
 */
 
-#ifndef _MISC_H
-#define _MISC_H
+#pragma once 
 
 #include "DataAlign.hpp"
 
@@ -37,4 +36,4 @@ extern "C"
 }
 #endif
 
-#endif /* _MISC_H */
+

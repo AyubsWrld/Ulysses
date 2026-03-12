@@ -16,8 +16,8 @@
 
    ================================================================================================================
 */
-#ifndef _DATA_AL_H
-#define _DATA_AL_H
+
+#pragma once
 
 #include <pthread.h>
 #include "Screen.hpp"
@@ -82,4 +82,4 @@ extern const struct data_al _data_unique;
 }
 #endif
 
-#endif /* _DATA_AL_H */
+

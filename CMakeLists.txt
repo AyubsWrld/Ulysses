@@ -10,4 +10,5 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED On)
 set(CMAKE_CXX_EXTENSIONS Off)
 
+add_subdirectory(Source/Scanner)
 add_executable(ulysses Source/main.cpp)

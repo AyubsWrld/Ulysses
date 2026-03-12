@@ -17,8 +17,7 @@
    ================================================================================================================
 */
 
-#ifndef _FHANDLE_H
-#define _FHANDLE_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C"
@@ -44,4 +43,3 @@ extern "C"
 }
 #endif
 
-#endif /* _FHANDLE_H */
