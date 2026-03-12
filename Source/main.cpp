@@ -11,6 +11,14 @@ struct FMain
     std::int32_t NoParseableHeader = 0;
 };
 
+int flag_fast_mode;
+int flag_repeat_scan;
+int flag_supress_sleep;
+int flag_network_octect;
+int flag_ignore_files;
+int flag_auto_scan;
+long flag_sleep_time;
+
 int main (int argc, char *argv[]) 
 {
     using std::cout; 
@@ -19,9 +27,5 @@ int main (int argc, char *argv[])
         FlagAssumeRoot, NoParseableHeader ] = FMain{};
 
 
-    for (const auto& Value : {FlagPassiveMode, FlagScanRange, FlagScanList,FlagAssumeRoot, NoParseableHeader}) 
-    {
-        cout << Value << "\n";
-    }
     return 0;
 }

@@ -27,7 +27,9 @@ extern "C"
 {
 #endif
 
-pthread_mutex_t *data_access;
+// TODO: Remove globals. 
+
+inline pthread_mutex_t *data_access;
 
 
 /* Holds each data type total counters */

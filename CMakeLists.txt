@@ -12,3 +12,10 @@ set(CMAKE_CXX_EXTENSIONS Off)
 
 add_subdirectory(Source/Scanner)
 add_executable(ulysses Source/main.cpp)
+
+target_link_libraries(
+    ulysses
+    PRIVATE
+    ulyscanner
+    pcap
+)

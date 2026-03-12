@@ -41,9 +41,9 @@ extern "C"
 #define KNOWN_COLOR "\33[1m%s\33[0m\n"
 
 /* Ohh no, more globals */
-struct winsize win_sz;
-char *current_network;
-int parsable_output, continue_listening;
+inline struct winsize win_sz;
+inline char *current_network;
+inline int parsable_output, continue_listening;
 
 
 /* Screen functions */

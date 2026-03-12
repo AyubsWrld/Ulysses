@@ -1,7 +1,7 @@
 [
 {
   "directory": "/root/projects/Ulysses/Build",
-  "command": "/usr/sbin/c++   -std=c++23 -o CMakeFiles/ulysses.dir/Source/main.cpp.o -c /root/projects/Ulysses/Source/main.cpp",
+  "command": "/usr/sbin/c++  -I/root/projects/Ulysses/Source/Scanner/Public -I/root/projects/Ulysses/Utils -std=c++23 -o CMakeFiles/ulysses.dir/Source/main.cpp.o -c /root/projects/Ulysses/Source/main.cpp",
   "file": "/root/projects/Ulysses/Source/main.cpp",
   "output": "CMakeFiles/ulysses.dir/Source/main.cpp.o"
 },

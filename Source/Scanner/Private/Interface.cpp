@@ -1,14 +1,18 @@
+#include <pcap/pcap.h>
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <time.h>
+#include <signal.h>
+#include <termios.h>
 
 #include <arpa/inet.h>
 
 #include "Interface.hpp"
 #include "DataAlign.hpp"
+#include "Screen.hpp"
 
 
 #include <sys/ioctl.h>
@@ -40,50 +44,71 @@
 #define ARPOP_REPLY 2
 #endif
 
-using 
+
+using FPCap         =   pcap_t;
+using FBPFProgram   =   bpf_program;
 
 
+inline struct termios stored_settings, working_settings; // Fix this please.
 
 /* Shitty globals */
-pcap_t *inject;
+FPCap *inject;
 unsigned char smac[] = { 0xCA, 0xFE, 0xCA, 0xFE, 0xCA, 0xFE };
 struct p_header *temp_header;
 
+void SignalHandler(int signum)
+{
+   if (parsable_output) {
+      exit(0);
+   } else {
+      if (signum == SIGCONT) {
+         tcsetattr(0,TCSANOW,&working_settings);
+      } else {
+         tcsetattr(0,TCSANOW,&stored_settings);
+
+         signal(SIGINT, SIG_DFL);
+         signal(SIGTERM, SIG_DFL);
+         //pthread_kill(keys, signum);
+
+         exit(0);
+      }
+   }
+}
 
 /* Start Sniffing on given iface */
-void *start_sniffer(void *args)
+void* StartSniffer(void *args)
 {
    pcap_t *descr;
-   struct bpf_program fp;	
-   struct FThreadData *datos; 
-   char *filter;
+   FBPFProgram fp;	
+   FThreadData* Datos; 
+   const char* Filter;
 
-   datos = (struct t_data *)args;
+   Datos = (struct FThreadData *)args;
 
    /* Open interface */
-   descr = pcap_open_live(datos->interface, BUFSIZ, 1, PCAP_TOUT, errbuf);
+   descr = pcap_open_live(Datos->Interface, BUFSIZ, 1, PCAP_TOUT, errbuf);
    if(descr == NULL) {
       printf("pcap_open_live(): %s\n", errbuf);
-      sighandler(0); // QUIT
+      SignalHandler(0); // QUIT
    }
 
    /* Set pcap filter */
-   filter = (datos->pcap_filter == NULL) ? "arp" : datos->pcap_filter;
-   if(pcap_compile(descr, &fp, filter, 0, 0) == -1) {
+   Filter = (Datos->PCapFilter == NULL) ? "arp" : Datos->PCapFilter ;
+   if(pcap_compile(descr, &fp, Filter, 0, 0) == -1) {
       printf("pcap_compile(): %s\n", pcap_geterr(descr));
-      sighandler(0); // QUIT
+      SignalHandler(0); // QUIT
    }
    pcap_setfilter(descr, &fp);
 
    /* Start loop for packet capture */
-   pcap_loop(descr, -1, (pcap_handler)process_packet, NULL);
+   pcap_loop(descr, -1, (pcap_handler)ProcessPacket, NULL);
 
    return NULL;
 }
 
 
 /* Handle packets recived from pcap_loop */
-void process_packet(u_char *args, struct pcap_pkthdr* pkthdr,
+void ProcessPacket(u_char *args, struct pcap_pkthdr* pkthdr,
                     const u_char* packet)
 {
    struct p_header *new_header;
@@ -108,19 +133,19 @@ void process_packet(u_char *args, struct pcap_pkthdr* pkthdr,
    new_reg = (struct data_registry *) malloc (sizeof(struct data_registry));
    new_reg->header = new_header;
    new_reg->tlength = new_header->length;
-   process_arp_header(new_reg, packet);
+   ProcessArpHeader(new_reg, packet);
 
    /* Check if its ARP request or reply, and add it to list */
    if (memcmp(type, ARP_REPLY, 2) == 0) {
      new_reg->type = 2;             /* Arp Type */
      pthread_mutex_lock(data_access);
-     _data_reply.add_registry(new_reg);
+     //_data_reply.add_registry(new_reg);
      pthread_mutex_unlock(data_access);
 
    } else if (memcmp(type, ARP_REQUEST, 2) == 0) {
      new_reg->type = 1;             /* Arp Type */
      pthread_mutex_lock(data_access);
-     _data_request.add_registry(new_reg);
+     //_data_request.add_registry(new_reg);
      pthread_mutex_unlock(data_access);
 
    } else {
@@ -132,7 +157,7 @@ void process_packet(u_char *args, struct pcap_pkthdr* pkthdr,
 }
 
 /* Handle arp packet header */
-void process_arp_header(struct data_registry *new_reg, const u_char* packet)
+void ProcessArpHeader(struct data_registry *new_reg, const u_char* packet)
 {
 
     /* Populate basic common registry info */
@@ -153,7 +178,7 @@ void process_arp_header(struct data_registry *new_reg, const u_char* packet)
 }
 
 /* Get our mac address */
-void get_mac(char *disp)
+void GetMac(char *disp)
 {
 
 #ifdef __linux__
@@ -197,7 +222,7 @@ void get_mac(char *disp)
 
 
 /* Init device for libpcap and get mac addr */
-void inject_init(char *disp)
+void InjectInit(char *disp)
 {
    char loc_errbuf[PCAP_ERRBUF_SIZE];
 
@@ -208,12 +233,12 @@ void inject_init(char *disp)
       exit(1);
    }
 
-   get_mac(disp);
+   GetMac(disp);
 }
 
 
 /* Forge Arp Packet, using libpcap */
-void forge_arp(char *source_ip, char *dest_ip, char *disp)
+void ForgeArp(char *source_ip, char *dest_ip, char *disp)
 {
    in_addr_t sip, dip;
 
@@ -248,7 +273,7 @@ void forge_arp(char *source_ip, char *dest_ip, char *disp)
 }
 
 
-void inject_destroy()
+void InjectDestroy()
 {
 	pcap_close(inject);
 }
