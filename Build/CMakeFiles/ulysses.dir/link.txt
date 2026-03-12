@@ -1,0 +1,1 @@
+/usr/sbin/c++ -Wl,--dependency-file=CMakeFiles/ulysses.dir/link.d CMakeFiles/ulysses.dir/Source/main.cpp.o -o ulysses
