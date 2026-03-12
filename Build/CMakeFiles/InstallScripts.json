@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/root/projects/Ulysses/Build/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

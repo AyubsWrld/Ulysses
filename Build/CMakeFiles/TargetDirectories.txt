@@ -1,3 +1,0 @@
-/root/projects/Ulysses/Build/CMakeFiles/ulysses.dir
-/root/projects/Ulysses/Build/CMakeFiles/edit_cache.dir
-/root/projects/Ulysses/Build/CMakeFiles/rebuild_cache.dir
