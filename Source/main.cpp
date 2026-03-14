@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <iostream>
+#include <pcap/pcap.h>
 
 struct FMain
 {
@@ -26,6 +27,17 @@ int main (int argc, char *argv[])
     auto [ Compareable, FlagPassiveMode, FlagScanRange, FlagScanList,
         FlagAssumeRoot, NoParseableHeader ] = FMain{};
 
-
+    char errbuf[PCAP_ERRBUF_SIZE];
+    pcap_t *handle;
+    
+    // Open device "eth0" for packet capture
+    handle = pcap_open_live("eth0", 65535, 1, 1000, errbuf);
+    if (handle == NULL) {
+    fprintf(stderr, "Error: %s\n", errbuf);
+    return 1;
+    }
+    
+    printf("Capture started on eth0...\n");
+    pcap_close(handle);
     return 0;
 }
